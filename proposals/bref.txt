@@ -1,0 +1,30 @@
+We need a formal specification defining a token properties and crowdfunding work-flow.
+Here is the simple brief for any crowdfunding:
+1. Three/Four letters unique token ID, it must be unique over all tokens in main cryptocurrency
+exchanges. You can check availability at https://coinmarketcap.com
+DATO
+
+2. Token supply (define a maximum amount of tokens to be issued) 18 333 333 DATO
+2.1 Token supply defined at the time of token creation and never be changed.
+2.2 Is this token will be mintable? Tokens can be minted during
+a token lifecycle up to maximum token supply. NO
+2.3 Describe token distribution rules.
+2.3.1 Define groups of privileged users allowed to get tokens directly from crowdsale owner:
+eg: team, partners, bounty participants, others..
+2.3.2 Define amount of tokens available for every group:
+60% ICO (11 000 000 DATO)
+25% bounty, testers, campaigns
+15% utility tokens, locked for 12 months
+
+3. Is the crowdfunding pre-sale stage exists (Pre-ICO) NO
+
+3.2 Low-capacity - minimal amount of invested ETHs for successful presale 0.1ETH
+3.3 Hard-capacity - maximal amount of ETHs invested in pre-sale TOTAL 22 000 ETH
+3.4 Rules of pre-sale stage cancellation, how investors will recive their ETH
+on presale cancelation? NONE
+4. Define main-sale stage (ICO)
+4.1 Token main-sale start/end dates start 31.12.2018, manual end date
+4.2 Main-sale cancelation rules manual cancelation
+Rate: 1 DATO = 0.002 ETH
+
+Access to deposited ETH has not to be restricted. Unsold DATO tokens has to have an option to be burned.

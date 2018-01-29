@@ -1,0 +1,30 @@
+{
+  "name": "datotoken-contracts",
+  "version": "1.0.0",
+  "description": "DATO Token and ICO contracts",
+  "main": "index.js",
+  "dependencies": {
+    "bignumber.js": "4.0.2",
+    "merge-stream": "^1.0.1",
+    "truffle-contract": "^3.0.2",
+    "tslib": "^1.9.0",
+    "web3": "0.20.3"
+  },
+  "devDependencies": {
+    "@types/bignumber.js": "4.0.2",
+    "@types/chai": "4.0.4",
+    "@types/merge-stream": "^1.1.0",
+    "@types/node": "^9.3.0",
+    "ganache-cli": "^6.0.3",
+    "truffle": "^4.0.5",
+    "tslint": "^5.9.1",
+    "typescript": "^2.6.2",
+    "web3-typed": "https://github.com/Softmotions/web3-typed.git"
+  },
+  "scripts": {
+    "build": "tsc && truffle compile",
+    "test": "npm run build && node run-tests.js"
+  },
+  "author": "Vyacheslav Tyutyunkov <tve@softmotions.com>",
+  "license": "private"
+}
