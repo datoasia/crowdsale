@@ -85,7 +85,7 @@ contract('DATOICO', function (accounts: string[]) {
     it('should ico contract deployed', async () => {
         const token = await DATOToken.deployed();
 
-        // for tests  - set low capacity in small (for availability to invest it full)
+        // for tests  - set low soft capacity (to make available to fill soft cap)
         cico = await DATOIco.new(
             token.address,
             actors.teamWallet,
@@ -268,4 +268,14 @@ contract('DATOICO', function (accounts: string[]) {
             state.sentWei.toString()
         );
     });
+
+    it('check whitelist access', async () => {
+        assert.isTrue(cico != null);
+        const ico = cico!!;
+
+        await assertEvmThrows(ico.disableWhitelist({from: actors.someone1}));
+        await assertEvmThrows(ico.whitelist(actors.someone1, {from: actors.someone1}));
+        await ico.disableWhitelist({from: actors.owner});
+        await ico.enableWhitelist({from: actors.owner});
+    })
 });

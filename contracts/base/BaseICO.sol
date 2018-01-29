@@ -119,14 +119,14 @@ contract BaseICO is Ownable {
   /**
    * @dev Enable whitelisting
    */
-  function enableWhitelist() public {
+  function enableWhitelist() onlyOwner public {
     whitelistEnabled = true;
   }
 
   /**
    * @dev Disable whitelisting
    */
-  function disableWhitelist() public {
+  function disableWhitelist() onlyOwner public {
     whitelistEnabled = false;
   }
 
