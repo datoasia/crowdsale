@@ -58,6 +58,7 @@ Commands:
         deploy               - Deploy DATO token and ICO smart contracts
         status               - Get contracts status
         ico state            - Get ico state
+        ico start <end>      - Start ICO with specified end date
         ico touch            - Touch ICO. Recalculate ICO state based on current block time.
         ico suspend          - Suspend ICO (only if ICO is Active)
         ico resume           - Resume ICO (only if ICO is Suspended)

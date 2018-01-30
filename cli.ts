@@ -302,7 +302,6 @@ handlers['tune'] = async () => {
     }
     console.log(`ICO end ts: ${end.unix()} sec`);
     await ico.tune(end.unix(), new BigNumber(lowcap), new BigNumber(hardcap), 0, 0);
-    throw new Error('Not implemented');
 };
 
 handlers['ico'] = async () => {
@@ -312,6 +311,16 @@ handlers['ico'] = async () => {
     const wcmd = ctx.cmdOpts.shift();
     switch (wcmd) {
         case 'state':
+            console.log({
+                            status: toIcoStateIdToName(new BigNumber(await ico.state.call()))
+                        });
+            break;
+        case 'start':
+            const end = moment(pullCmdArg('end'));
+            if (!end.unix() || end.isBefore(moment())) {
+                throw new Error('End date is before current time');
+            }
+            await ico.start(end.unix());
             console.log({
                             status: toIcoStateIdToName(new BigNumber(await ico.state.call()))
                         });
@@ -482,6 +491,7 @@ function usage(error?: string): never {
         '\n\tdeploy               - Deploy DATO token and ICO smart contracts' +
         '\n\tstatus               - Get contracts status' +
         '\n\tico state            - Get ico state' +
+        '\n\tico start <end>      - Start ICO with specified end date' +
         '\n\tico touch            - Touch ICO. Recalculate ICO state based on current block time.' +
         '\n\tico suspend          - Suspend ICO (only if ICO is Active)' +
         '\n\tico resume           - Resume ICO (only if ICO is Suspended)' +
