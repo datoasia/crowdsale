@@ -1,30 +1,47 @@
 {
-  "name": "datotoken-contracts",
+  "name": "DATOToken",
   "version": "1.0.0",
   "description": "DATO Token and ICO contracts",
   "main": "index.js",
   "dependencies": {
+    "ajv": "^6.0.1",
     "bignumber.js": "4.0.2",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "ejs": "^2.5.7",
+    "eth-lightwallet": "^3.0.1",
+    "ganache-cli": "^6.0.3",
+    "js-yaml": "^3.10.0",
+    "lodash": "^4.17.4",
     "merge-stream": "^1.0.1",
+    "moment": "^2.20.1",
+    "node-async-router": "^0.0.2",
+    "request": "^2.83.0",
     "truffle-contract": "^3.0.2",
     "tslib": "^1.9.0",
-    "web3": "0.20.3"
+    "web3": "0.20.3",
+    "web3-typed": "https://github.com/Softmotions/web3-typed.git"
   },
   "devDependencies": {
     "@types/bignumber.js": "4.0.2",
+    "@types/bluebird-global": "^3.5.3",
     "@types/chai": "4.0.4",
     "@types/merge-stream": "^1.1.0",
     "@types/node": "^9.3.0",
+    "@types/request": "^2.0.13",
+    "del": "^3.0.0",
     "ganache-cli": "^6.0.3",
+    "json-schema-to-typescript": "^5.3.2",
     "truffle": "^4.0.5",
     "tslint": "^5.9.1",
     "typescript": "^2.6.2",
-    "web3-typed": "https://github.com/Softmotions/web3-typed.git"
+    "typescript-logging": "^0.5.0"
   },
   "scripts": {
     "build": "tsc && truffle compile",
     "test": "npm run build && node run-tests.js"
   },
   "author": "Vyacheslav Tyutyunkov <tve@softmotions.com>",
-  "license": "private"
+  "license": "private",
+  "repository": "git@github.com:datoasia/crowdsale.git"
 }

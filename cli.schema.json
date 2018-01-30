@@ -1,0 +1,108 @@
+{
+  "$id": "ICliConfig",
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "definitions": {},
+  "properties": {
+    "ethereum": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Network endpoint URL"
+        },
+        "lockfilesDir": {
+          "type": "string",
+          "description": "Directory where contract deployment lock files stored"
+        },
+        "from": {
+          "type": "string",
+          "pattern": "^0x[a-zA-Z0-9]{40}$",
+          "description": "Network from address"
+        },
+        "gas": {
+          "type": "string",
+          "description": "Default Gas limit",
+          "pattern": "^\\d+(e\\d+)?$"
+        },
+        "gasPrice": {
+          "type": "string",
+          "description": "Default Gas price",
+          "pattern": "^\\d+(e\\d+)?$"
+        },
+        "DATOToken": {
+          "type": "object",
+          "description": "DATO token contract",
+          "properties": {
+            "schema": {
+              "type": "string",
+              "description": "Path to the contract schema"
+            },
+            "totalSupplyTokens": {
+              "type": "string"
+            },
+            "reservedStaffTokens": {
+              "type": "string"
+            },
+            "reservedUtilityTokens": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "totalSupplyTokens",
+            "reservedStaffTokens",
+            "reservedUtilityTokens"
+          ]
+        },
+        "DATOICO": {
+          "type": "object",
+          "description": "DATO ico contract",
+          "properties": {
+            "schema": {
+              "type": "string",
+              "description": "Path to the contract schema"
+            },
+            "teamWallet": {
+              "type": "string",
+              "pattern": "^0x[a-zA-Z0-9]{40}$",
+              "description": "Team wallet address on network"
+            },
+            "lowCapWei": {
+              "type": "string"
+            },
+            "hardCapWei": {
+              "type": "string"
+            },
+            "lowCapTxWei": {
+              "type": "string"
+            },
+            "hardCapTxWei": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "teamWallet",
+            "lowCapWei",
+            "hardCapWei",
+            "lowCapTxWei",
+            "hardCapTxWei"
+          ]
+        }
+      },
+      "required": [
+        "endpoint",
+        "from",
+        "lockfilesDir",
+        "gas",
+        "gasPrice",
+        "DATOToken",
+        "DATOICO"
+      ]
+    }
+  },
+  "required": [
+    "ethereum"
+  ]
+}

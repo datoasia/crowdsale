@@ -1,0 +1,19 @@
+
+ethereum:
+  endpoint: 'http://localhost:8547/'
+  from: '0x27f83c24402ddb237ab5e9ea16934e44df339dbf'
+  lockfilesDir: "{cwd}"
+  gas: '4e6'
+  gasPrice: '30e9'
+  DATOToken:
+    schema: '{moduledir}/build/contracts/DATOToken.json'
+    totalSupplyTokens: '18333333'
+    reservedStaffTokens: '275e4'
+    reservedUtilityTokens: '4583333'
+  DATOICO:
+    schema: '{moduledir}/build/contracts/DATOICO.json'
+    teamWallet: '0x89728bcd39df4100f84e70012032bda835b7e8b5'
+    lowCapWei: '6e21'   # 6 000 eth
+    hardCapWei: '22e21' #  22 000 eth
+    lowCapTxWei: '1e17' # 0.1 eth
+    hardCapTxWei: '22e21'
