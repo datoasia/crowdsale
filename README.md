@@ -36,6 +36,18 @@
 * Invested funds: transfered to separate `Team Wallet`
 * If ico hasn't reached hard-cap - it will be `teminated`
 
+## Setup parity client
+
+Parity client node will be used by DATO `cli` tool to provide crowdfunding info.
+
+* You need to create ethereum address in parity client - this address will be `owner` of our smart-contracts. (Description how to create address account in parity client is out of scope of this manual)
+
+Then launch parity client in `geth` compatible mode:
+```sh
+parity --geth --unlock '<owner address created at previous step>' --password '<password file for unlocked address>'
+```
+So parity must be started with unlocked `owner` address and be synched with mainnet. Keep parity client running forever during ICO. It will be great to autostart parity client on reboot.
+
 # CLI tool
 
 DATO command line tool used to manage token and ico. First of all you have to create `cli.yml` file. 
