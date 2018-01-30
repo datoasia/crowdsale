@@ -38,14 +38,41 @@
 
 # CLI tool
 
+DATO command line tool used to manage token and ico. First of all you have to create `cli.yml` file. 
+(You can just `cp ./cli-ganache.yml ./cli.yml` then edit this file).
+
+## Configuration
+```yaml
+ethereum:
+  endpoint: 'http://localhost:8547/'
+  from: '0x27f83c24402ddb237ab5e9ea16934e44df339dbf'
+  lockfilesDir: "{cwd}"
+  gas: '4e6'
+  gasPrice: '30e9'
+  DATOToken:
+    schema: '{moduledir}/build/contracts/DATOToken.json'
+    totalSupplyTokens: '18333333'
+    reservedStaffTokens: '4583333'
+    reservedUtilityTokens: '275e4'
+  DATOICO:
+    schema: '{moduledir}/build/contracts/DATOICO.json'
+    teamWallet: '0x89728bcd39df4100f84e70012032bda835b7e8b5'
+    hardCapWei: '22e21' #  22 000 eth
+    lowCapTxWei: '1e17' # 0.1 eth
+    hardCapTxWei: '22e21'
+```
+
+* Check endpoint, parity should be running and this file must exists.
+* Change `from` to contract owner address.
+* Create ethereum address for team wallet and set `teamWallet` appropriately.
+* Check the actual gas price at https://ethgasstation.info/ and change `gas` parameter of the config.
+* You need at least `0.1 eth` at `owner`s address.
+
+## Usage 
 ```sh
-   yarn install 
-   npm test
    node ./cli.js --help
 ```
 
-## Usage 
- TODO:
 ```
 Usage: 
         node cli.js
@@ -81,19 +108,17 @@ Commands:
                  <addr> - Ethereum address
 ```
 
-### Test with ganache
+### Contract deployment
 
-Start ganache server:
-```sh
-    ./run-ganache-test.sh
+* Contract deployment can be wonky process since it depends on current load of ethereum network. Please be sure that ETH network is not overloaded at time of deployment.
+* Please check you have at least `0.1` eth at `owner` account.
+
+```
+node ./cli.js deploy
 ```
 
-Deploy Token and ICO
-```sh
-    node ./cli.js -c cli-ganache.yml deploy
-```
-
-Please do not terminate deployment process by Ctrl+C or something else, wait until script finish its work. If all ok, you will get something like this:
+Please do not terminate deployment process by `Ctrl+C` or something else, wait until script finish its work. 
+If all ok, you will get something like this:
 ```
 Using Web3.providers.HttpProvider provider for: http://localhost:8547/
 web3 node: EthereumJS TestRPC/v2.0.2/ethereum-js
@@ -115,3 +140,99 @@ DATOICO successfully deployed at: 0xb3fb533e40dd7958a7eacc2f3cbcfa26bb4a2467
 
 Setting ICO for token...
 ```
+
+Here: `0xdc62191cdb013502155373815f6b81e8d19b4fbd` is the address of token contract and
+`0xb3fb533e40dd7958a7eacc2f3cbcfa26bb4a2467` address of ico contract.
+
+## Get token and ICO status
+
+`node ./cli.js status`
+
+```
+Command: status opts:  []
+Using Web3.providers.HttpProvider provider for: http://localhost:8547/
+web3 node: EthereumJS TestRPC/v2.0.2/ethereum-js
+w3 connected to >>>> UNKNOWN <<<<
+Loaded DATOToken instance at: 0xdc62191cdb013502155373815f6b81e8d19b4fbd
+Loaded DATOICO instance at: 0xb3fb533e40dd7958a7eacc2f3cbcfa26bb4a2467
+{
+  "token": {
+    "address": "0xdc62191cdb013502155373815f6b81e8d19b4fbd",
+    "owner": "0x27f83c24402ddb237ab5e9ea16934e44df339dbf",
+    "symbol": "DATO",
+    "totalSupply": "1.8333333e+25",
+    "availableSupply": "1.1e+25",
+    "locked": true
+  },
+  "ico": {
+    "address": "0xb3fb533e40dd7958a7eacc2f3cbcfa26bb4a2467",
+    "owner": "0x27f83c24402ddb237ab5e9ea16934e44df339dbf",
+    "teamWallet": "0x89728bcd39df4100f84e70012032bda835b7e8b5",
+    "state": "Inactive",
+    "weiCollected": "0",
+    "hardCapWei": "2.2e+22",
+    "lowCapTxWei": "100000000000000000",
+    "hardCapTxWei": "2.2e+22"
+  }
+}
+```
+
+## Start ICO
+
+`node ./cli.js ico start '2018-02-14'`
+
+```
+Command: ico opts:  [ 'start', '2018-02-14' ]
+Using Web3.providers.HttpProvider provider for: http://localhost:8547/
+web3 node: EthereumJS TestRPC/v2.0.2/ethereum-js
+w3 connected to >>>> UNKNOWN <<<<
+Loaded DATOToken instance at: 0xdc62191cdb013502155373815f6b81e8d19b4fbd
+Loaded DATOICO instance at: 0xb3fb533e40dd7958a7eacc2f3cbcfa26bb4a2467
+{ status: 'Active' }
+```
+
+ICO has successfully started. ICO finish date is 14/02/2018. 
+
+## Disable whitelisting
+
+`node ./cli.js wl disable`
+
+## Distribute tokens for privileged holders
+
+**Examples**
+
+Assign `200` tokens (without decimal part) to someone:
+
+`node ./cli.js group reserve 0x6cb049910482c96f5bc7767a5b2645327d18ddf6 staff 200`
+
+Checkout token balance for `0x6cb049910482c96f5bc7767a5b2645327d18ddf6`:
+
+`node ./cli.js token balance 0x6cb049910482c96f5bc7767a5b2645327d18ddf6`
+
+You will get:
+
+```
+Command: token opts:  [ 'balance', '0x6cb049910482c96f5bc7767a5b2645327d18ddf6' ]
+Using Web3.providers.HttpProvider provider for: http://localhost:8547/
+web3 node: EthereumJS TestRPC/v2.0.2/ethereum-js
+w3 connected to >>>> UNKNOWN <<<<
+Loaded DATOToken instance at: 0xdc62191cdb013502155373815f6b81e8d19b4fbd
+Loaded DATOICO instance at: 0xb3fb533e40dd7958a7eacc2f3cbcfa26bb4a2467
+{
+  "tokens": "200",
+  "tokensWithDecimals": "200000000000000000000"
+}
+```
+
+### Test with ganache
+
+Start ganache server:
+```sh
+    ./run-ganache-test.sh
+```
+
+Deploy Token and ICO
+```sh
+    node ./cli.js -c cli-ganache.yml deploy
+```
+
