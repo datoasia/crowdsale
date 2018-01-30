@@ -59,9 +59,9 @@ contract('DATOICO', function (accounts: string[]) {
         // Total supply
         assert.equal(await token.totalSupply.call(), tokens('18333333').toString());
         // Staff
-        assert.equal(await token.getReservedTokens.call(TokenReservation.Staff), tokens('275e4'));
+        assert.equal(await token.getReservedTokens.call(TokenReservation.Staff), tokens('4583333'));
         // Utility
-        assert.equal(await token.getReservedTokens.call(TokenReservation.Utility), tokens('4583333'));
+        assert.equal(await token.getReservedTokens.call(TokenReservation.Utility), tokens('275e4'));
         // Available supply
         assert.equal(
             await token.availableSupply.call(),
@@ -85,14 +85,13 @@ contract('DATOICO', function (accounts: string[]) {
     it('should ico contract deployed', async () => {
         const token = await DATOToken.deployed();
 
-        // for tests  - set low soft capacity (to make available to fill soft cap)
+        // for tests  - set low hard capacity (to make available to fill soft cap)
         cico = await DATOIco.new(
             token.address,
             actors.teamWallet,
-            tokens2wei(new BigNumber('6e3')), // low cap
-            tokens2wei(new BigNumber('11e6')), // hard cap
+            tokens2wei(new BigNumber('11e3')), // hard cap
             new BigNumber('1e17'), // min tx cap 0.1 eth
-            tokens2wei(new BigNumber('11e6')), // hard tx cap
+            tokens2wei(new BigNumber('11e3')), // hard tx cap
             {
                 from: actors.owner
             }
@@ -100,10 +99,9 @@ contract('DATOICO', function (accounts: string[]) {
         state.teamWalletInitialBalance = await web3.eth.getBalance(actors.teamWallet);
         assert.equal(await cico.token.call(), token.address);
         assert.equal(await cico.teamWallet.call(), actors.teamWallet);
-        assert.equal((await cico.lowCapWei.call()).toString(), tokens2wei(new BigNumber('6e3')).toString());
-        assert.equal((await cico.hardCapWei.call()).toString(), tokens2wei(new BigNumber('11e6')).toString());
+        assert.equal((await cico.hardCapWei.call()).toString(), tokens2wei(new BigNumber('11e3')).toString());
         assert.equal((await cico.lowCapTxWei.call()).toString(), new BigNumber('1e17').toString());
-        assert.equal((await cico.hardCapTxWei.call()).toString(), tokens2wei(new BigNumber('11e6')).toString());
+        assert.equal((await cico.hardCapTxWei.call()).toString(), tokens2wei(new BigNumber('11e3')).toString());
 
         // Token is not controlled by any ICO
         assert.equal(await token.ico.call(), '0x0000000000000000000000000000000000000000');
@@ -121,8 +119,8 @@ contract('DATOICO', function (accounts: string[]) {
         const token = await DATOToken.deployed();
         // Check initial state
         assert.equal(await token.availableSupply.call(), tokens(11e6));
-        assert.equal(await token.getReservedTokens.call(TokenReservation.Staff), tokens(275e4));
-        assert.equal(await token.getReservedTokens.call(TokenReservation.Utility), tokens(4583333));
+        assert.equal(await token.getReservedTokens.call(TokenReservation.Staff), tokens(4583333));
+        assert.equal(await token.getReservedTokens.call(TokenReservation.Utility), tokens(275e4));
         // Do not allow token reservation from others
         await assertEvmThrows(token.assignReserved(actors.team1, TokenReservation.Staff, tokens(1e6), {from: actors.someone1}));
         // // Reserve tokens for team member
@@ -134,8 +132,13 @@ contract('DATOICO', function (accounts: string[]) {
         assert.equal(await token.balanceOf.call(actors.team1), tokens(1e6));
         assert.equal(await token.balanceOf.call(actors.someone1), 0);
         // check reserved tokens for staff
-        assert.equal(await token.getReservedTokens.call(TokenReservation.Staff), tokens(275e4 - 1e6));
+        assert.equal(await token.getReservedTokens.call(TokenReservation.Staff), tokens(4583333 - 1e6));
+
         // Reserve tokens for utility
+        // Utility tokens available only after 1 years
+        await assertEvmThrows(token.assignReserved(actors.utility1, TokenReservation.Utility, tokens(2e6), {from: actors.owner}));
+        // +1 week will force end of preICO.
+        await web3IncreaseTime(Seconds.years(1) + 1);
         txres = await token.assignReserved(actors.utility1, TokenReservation.Utility, tokens(2e6), {from: actors.owner});
         assert.equal(txres.logs[0].event, 'ReservedTokensDistributed');
         assert.equal(txres.logs[0].args.to, actors.utility1);
@@ -144,9 +147,11 @@ contract('DATOICO', function (accounts: string[]) {
         assert.equal(await token.balanceOf.call(actors.team1), tokens(1e6));
         assert.equal(await token.balanceOf.call(actors.utility1), tokens(2e6));
         // check reserved tokens for utility
-        assert.equal(await token.getReservedTokens.call(TokenReservation.Utility), tokens(4583333 - 2e6));
+        assert.equal(await token.getReservedTokens.call(TokenReservation.Utility), tokens(275e4 - 2e6));
         // Do not allow reserve more than allowed tokens
-        await assertEvmInvalidOpcode(token.assignReserved(actors.utility1, TokenReservation.Utility, tokens(4583333 - 2e6 + 1), {from: actors.owner}));
+        await assertEvmInvalidOpcode(token.assignReserved(actors.utility1, TokenReservation.Utility, tokens(275e4 - 2e6 + 1), {from: actors.owner}));
+
+        await web3IncreaseTime(-Seconds.years(1));
     });
 
     it('should public token operations be locked during ICO', async () => {
@@ -226,9 +231,9 @@ contract('DATOICO', function (accounts: string[]) {
         investor1Tokens = investor1Tokens.add(txres.logs[0].args.tokens);
         assert.equal(await token.balanceOf.call(actors.investor1), investor1Tokens.toString());
 
-        // Perform rest of investment required to fill low-cap
+        // Perform rest of investment required to fill hard-cap
         await ico.whitelist(actors.investor3);
-        let requiredWei = new BigNumber(await ico.lowCapWei.call());
+        let requiredWei = new BigNumber(await ico.hardCapWei.call());
         requiredWei = requiredWei.sub(await ico.collectedWei.call());
         txres = await ico.sendTransaction({
                                               value: requiredWei,
@@ -237,28 +242,8 @@ contract('DATOICO', function (accounts: string[]) {
         state.sentWei = state.sentWei.add(requiredWei);
         assert.equal(txres.logs[0].event, 'ICOInvestment');
         assert.equal(txres.logs[0].args.investedWei, requiredWei.toString());
-        assert.equal((await ico.lowCapWei.call()).toString(), (await ico.collectedWei.call()).toString());
+        assert.equal((await ico.hardCapWei.call()).toString(), (await ico.collectedWei.call()).toString());
 
-        // Block richInvestor
-        await ico.blacklist(actors.investor3);
-        await assertEvmThrows(ico.sendTransaction({
-                                                      value: tokens2wei(1000),
-                                                      from: actors.investor3
-                                                  })
-        );
-
-        // +1 week will force end of preICO.
-        await web3IncreaseTime(Seconds.weeks(1) + 1);
-
-        // Try to invest outside of preICO
-        await assertEvmThrows(ico.sendTransaction({
-                                                      value: tokens2wei(1000),
-                                                      from: actors.investor1
-                                                  })
-        );
-        assert.equal(await ico.state.call(), ICOState.Active);
-        txres = await ico.touch({from: actors.owner});
-        assert.equal(txres.logs[0].event, 'ICOCompleted');
         assert.equal(await ico.state.call(), ICOState.Completed);
     });
 

@@ -23,19 +23,18 @@
 # ICO
 
 * ETH/Token ratio: `500`
-* Dates: `---`
+* Dates: `manual`
 * Bonus: `0`
 * Hard-cap: `11e6` tokens
-* Low-cap: `6e6` tokens (???)
 * Minimal investor transaction: `0.1 ETH` (to avoid spam attacks)
 * Token distribution/reservations:
-  * Staff: `275e4`
-  * Utility: `4583333`
+  * Staff: `4583333`
+  * Utility: `275e4` (locked for 1 year since Token deployed)
 * Presale whitelist: `yes`
 * Whitelist can be disabled: `yes`
 * Manual cancelation: `yes`
 * Invested funds: transfered to separate `Team Wallet`
-* If pre-ico hasn't reached low-cap - it will be `teminated`
+* If ico hasn't reached hard-cap - it will be `teminated`
 
 # CLI tool
 
@@ -75,8 +74,8 @@ Commands:
         wl disable           - Disable address whitelisting for ICO 
         wl enable            - Enable address whitelisting for ICO 
         wl is <addr>         - Check if given <addr> in whitelist 
-        tune <end> <lowcap> <hardcap> - Set end date/low-cap/hard-cap for ICO (Only in suspended state) 
-                                        Eg: node ./cli.js tune '2018-12-31' '6000e18' '22000e18'
+        tune <end> <hardcap> - Set end date/hard-cap for ICO (Only in suspended state) 
+                               Eg: node ./cli.js tune '2018-12-31' '22000e18'
 
                  <group> - Token reservation group: staff|utility
                  <addr> - Ethereum address
@@ -101,14 +100,13 @@ web3 node: EthereumJS TestRPC/v2.0.2/ethereum-js
 w3 connected to >>>> UNKNOWN <<<<
 Deployment: 'DATOToken'  { schema: './build/contracts/DATOToken.json',
   totalSupplyTokens: '18333333',
-  reservedStaffTokens: '275e4',
-  reservedUtilityTokens: '4583333' }
+  reservedStaffTokens: '4583333',
+  reservedUtilityTokens: '275e4' }
 DATOToken successfully deployed at: 0xdc62191cdb013502155373815f6b81e8d19b4fbd
 
 
 Deployment: 'DATOICO'  { schema: './build/contracts/DATOICO.json',
   teamWallet: '0x89728bcd39df4100f84e70012032bda835b7e8b5',
-  lowCapWei: '6e21',
   hardCapWei: '22e21',
   lowCapTxWei: '1e17',
   hardCapTxWei: '22e21' }

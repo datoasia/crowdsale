@@ -14,7 +14,6 @@ contract DATOICO is BaseICO {
 
     function DATOICO(address icoToken_,
                      address teamWallet_,
-                     uint lowCapWei_,
                      uint hardCapWei_,
                      uint lowCapTxWei_,
                      uint hardCapTxWei_) public {
@@ -22,7 +21,6 @@ contract DATOICO is BaseICO {
         token = BaseICOToken(icoToken_);
         state = State.Inactive;
         teamWallet = teamWallet_;
-        lowCapWei = lowCapWei_;
         hardCapWei = hardCapWei_;
         lowCapTxWei = lowCapTxWei_;
         hardCapTxWei = hardCapTxWei_;
@@ -41,13 +39,8 @@ contract DATOICO is BaseICO {
             endAt = block.timestamp;
             ICOCompleted(collectedWei);
         } else if (block.timestamp >= endAt) {
-            if (collectedWei < lowCapWei) {
-                state = State.NotCompleted;
-                ICONotCompleted();
-            } else {
-                state = State.Completed;
-                ICOCompleted(collectedWei);
-            }
+            state = State.NotCompleted;
+            ICONotCompleted();
         }
     }
 

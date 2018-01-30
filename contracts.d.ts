@@ -193,9 +193,6 @@ interface IBaseICO extends IContractInstance, IOwnable {
   // ICO end date seconds since epoch.
   endAt: ISimpleCallable<NumberLike>;
 
-  // Minimal amount of investments in wei needed for successfull ICO
-  lowCapWei: ISimpleCallable<NumberLike>;
-
   // Maximal amount of investments in wei for this ICO.
   // If reached ICO will be in `Completed` state.
   hardCapWei: ISimpleCallable<NumberLike>;
@@ -265,14 +262,12 @@ interface IBaseICO extends IContractInstance, IOwnable {
    * @dev Change basic ICO paraneters. Can be done only during `Suspended` state.
    * Any provided parameter is used only if it is not zero.
    * @param endAt ICO end date seconds since epoch. Used if it is not zero.
-   * @param lowCapWei ICO low capacity. Used if it is not zero.
    * @param hardCapWei ICO hard capacity. Used if it is not zero.
    * @param lowCapTxWei Min limit for ICO per transaction
    * @param hardCapTxWei Hard limit for ICO per transaction
    */
   tune(
     endAt: NumberLike,
-    lowCapWei: NumberLike,
     hardCapWei: NumberLike,
     lowCapTxWei: NumberLike,
     hardCapTxWei: NumberLike,

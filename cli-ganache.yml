@@ -8,12 +8,11 @@ ethereum:
   DATOToken:
     schema: '{moduledir}/build/contracts/DATOToken.json'
     totalSupplyTokens: '18333333'
-    reservedStaffTokens: '275e4'
-    reservedUtilityTokens: '4583333'
+    reservedStaffTokens: '4583333'
+    reservedUtilityTokens: '275e4'
   DATOICO:
     schema: '{moduledir}/build/contracts/DATOICO.json'
     teamWallet: '0x89728bcd39df4100f84e70012032bda835b7e8b5'
-    lowCapWei: '6e21'   # 6 000 eth
     hardCapWei: '22e21' #  22 000 eth
     lowCapTxWei: '1e17' # 0.1 eth
     hardCapTxWei: '22e21'

@@ -14,6 +14,8 @@ contract DATOToken is BaseICOToken {
 
     uint internal constant ONE_TOKEN = 1e18;
 
+    uint public utilityLockedDate;
+
     /// @dev Fired some tokens distributed to someone from staff, locked
     event ReservedTokensDistributed(address indexed to, uint8 group, uint amount);
 
@@ -22,6 +24,7 @@ contract DATOToken is BaseICOToken {
         uint reservedUtilityTokens_)
     BaseICOToken(totalSupplyTokens_ * ONE_TOKEN) public {
         require(availableSupply == totalSupply);
+        utilityLockedDate = block.timestamp + 1 years;
         availableSupply = availableSupply
             .sub(reservedStaffTokens_ * ONE_TOKEN)
             .sub(reservedUtilityTokens_ * ONE_TOKEN);
@@ -59,6 +62,10 @@ contract DATOToken is BaseICOToken {
      */
     function assignReserved(address to_, uint8 group_, uint amount_) onlyOwner public {
         require(to_ != address(0) && (group_ & 0x3) != 0);
+        if (group_ == RESERVED_UTILITY_GROUP) {
+            require(block.timestamp >= utilityLockedDate);
+        }
+
         // SafeMath will check reserved[group_] >= amount
         reserved[group_] = reserved[group_].sub(amount_);
         balances[to_] = balances[to_].add(amount_);

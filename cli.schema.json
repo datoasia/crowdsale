@@ -68,9 +68,6 @@
               "pattern": "^0x[a-zA-Z0-9]{40}$",
               "description": "Team wallet address on network"
             },
-            "lowCapWei": {
-              "type": "string"
-            },
             "hardCapWei": {
               "type": "string"
             },
@@ -84,7 +81,6 @@
           "required": [
             "schema",
             "teamWallet",
-            "lowCapWei",
             "hardCapWei",
             "lowCapTxWei",
             "hardCapTxWei"

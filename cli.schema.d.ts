@@ -51,7 +51,6 @@ export interface ICliConfig {
        * Team wallet address on network
        */
       teamWallet: string;
-      lowCapWei: string;
       hardCapWei: string;
       lowCapTxWei: string;
       hardCapTxWei: string;

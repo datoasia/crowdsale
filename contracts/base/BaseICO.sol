@@ -41,9 +41,6 @@ contract BaseICO is Ownable {
   /// @dev ICO end date seconds since epoch.
   uint public endAt;
 
-  /// @dev Minimal amount of investments in wei needed for successfull ICO
-  uint public lowCapWei;
-
   /// @dev Maximal amount of investments in wei for this ICO.
   /// If reached ICO will be in `Completed` state.
   uint public hardCapWei;
@@ -67,8 +64,8 @@ contract BaseICO is Ownable {
   mapping (address => bool) public whitelist;
 
   // ICO state transition events
-  event ICOStarted(uint indexed endAt, uint lowCapWei, uint hardCapWei, uint lowCapTxWei, uint hardCapTxWei);
-  event ICOResumed(uint indexed endAt, uint lowCapWei, uint hardCapWei, uint lowCapTxWei, uint hardCapTxWei);
+  event ICOStarted(uint indexed endAt, uint hardCapWei, uint lowCapTxWei, uint hardCapTxWei);
+  event ICOResumed(uint indexed endAt, uint hardCapWei, uint lowCapTxWei, uint hardCapTxWei);
   event ICOSuspended();
   event ICOTerminated();
   event ICONotCompleted();
@@ -139,7 +136,7 @@ contract BaseICO is Ownable {
     endAt = endAt_;
     startAt = block.timestamp;
     state = State.Active;
-    ICOStarted(endAt, lowCapWei, hardCapWei, lowCapTxWei, hardCapTxWei);
+    ICOStarted(endAt, hardCapWei, lowCapTxWei, hardCapTxWei);
   }
 
   /**
@@ -169,21 +166,16 @@ contract BaseICO is Ownable {
    * @dev Change basic ICO paraneters. Can be done only during `Suspended` state.
    * Any provided parameter is used only if it is not zero.
    * @param endAt_ ICO end date seconds since epoch. Used if it is not zero.
-   * @param lowCapWei_ ICO low capacity. Used if it is not zero.
    * @param hardCapWei_ ICO hard capacity. Used if it is not zero.
    * @param lowCapTxWei_ Min limit for ICO per transaction
    * @param hardCapTxWei_ Hard limit for ICO per transaction
    */
   function tune(uint endAt_,
-                uint lowCapWei_,
                 uint hardCapWei_,
                 uint lowCapTxWei_,
                 uint hardCapTxWei_) onlyOwner isSuspended public {
     if (endAt_ > block.timestamp) {
       endAt = endAt_;
-    }
-    if (lowCapWei_ > 0) {
-      lowCapWei = lowCapWei_;
     }
     if (hardCapWei_ > 0) {
       hardCapWei = hardCapWei_;
@@ -194,7 +186,7 @@ contract BaseICO is Ownable {
     if (hardCapTxWei_ > 0) {
       hardCapTxWei = hardCapTxWei_;
     }
-    require(lowCapWei <= hardCapWei && lowCapTxWei <= hardCapTxWei);
+    require(lowCapTxWei <= hardCapTxWei);
     touch();
   }
 
@@ -203,7 +195,7 @@ contract BaseICO is Ownable {
    */
   function resume() onlyOwner isSuspended public {
     state = State.Active;
-    ICOResumed(endAt, lowCapWei, hardCapWei, lowCapTxWei, hardCapTxWei);
+    ICOResumed(endAt, hardCapWei, lowCapTxWei, hardCapTxWei);
     touch();
   }
 

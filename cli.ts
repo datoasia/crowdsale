@@ -177,9 +177,17 @@ function failIfNotDeployed(cname?: ContractName) {
 }
 
 function checkEthNetwork() {
-    if (ctx.web3.eth.syncing) {
-        throw new Error('Ethereum network client in pending synchronization, try again later');
-    }
+    return new Promise((resolve, reject) => {
+        ctx.web3.eth.getSyncing((err, sync) => {
+            if (err)  {
+                reject(err);
+            }
+            if (sync) {
+                reject('Ethereum network client in pending synchronization, try again later');
+            }
+            resolve();
+        });
+    });
 }
 
 // -------------------- Operations
@@ -188,7 +196,7 @@ function checkEthNetwork() {
  * Deploy
  */
 handlers['deploy'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     if (!ctx.DATOToken.instance) {
         const tcfg = ctx.cfg.ethereum.DATOToken;
         console.log(`Deployment: 'DATOToken' `, tcfg);
@@ -209,7 +217,6 @@ handlers['deploy'] = async () => {
     ctx.DATOICO.instance = await ctx.DATOICO.meta.new(
         ctx.DATOToken.instance.address,
         icfg.teamWallet,
-        icfg.lowCapWei,
         icfg.hardCapWei,
         icfg.lowCapTxWei,
         icfg.hardCapWei,
@@ -227,7 +234,7 @@ handlers['deploy'] = async () => {
  * Show status info
  */
 handlers['status'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     failIfNotDeployed();
     const token = ctx.DATOToken.instance;
     const ico = ctx.DATOICO.instance;
@@ -246,7 +253,6 @@ handlers['status'] = async () => {
             teamWallet: await ico.teamWallet.call(),
             state: toIcoStateIdToName((await ico.state.call()) as any),
             weiCollected: await ico.collectedWei.call(),
-            lowCapWei: await ico.lowCapWei.call(),
             hardCapWei: await ico.hardCapWei.call(),
             lowCapTxWei: await ico.lowCapTxWei.call(),
             hardCapTxWei: await ico.hardCapTxWei.call()
@@ -260,7 +266,7 @@ handlers['status'] = async () => {
  * on Token group operations
  */
 handlers['group'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     failIfNotDeployed('DATOToken');
     const token = ctx.DATOToken.instance;
     const wcmd = ctx.cmdOpts.shift();
@@ -290,22 +296,21 @@ handlers['group'] = async () => {
 };
 
 handlers['tune'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     failIfNotDeployed('DATOICO');
     const ico = ctx.DATOICO.instance;
     // tune <end> <lowcap> <hardcap> - Set end date/low-cap/hard-cap for ICO (Only in suspended state)
     const end = moment(pullCmdArg('end'));
-    const lowcap = pullCmdArg('lowcap');
     const hardcap = pullCmdArg('hardcap');
     if (!end.unix() || end.isBefore(moment())) {
         throw new Error('End date is before current time');
     }
     console.log(`ICO end ts: ${end.unix()} sec`);
-    await ico.tune(end.unix(), new BigNumber(lowcap), new BigNumber(hardcap), 0, 0);
+    await ico.tune(end.unix(), new BigNumber(hardcap), 0, 0);
 };
 
 handlers['ico'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     failIfNotDeployed('DATOICO');
     const ico = ctx.DATOICO.instance;
     const wcmd = ctx.cmdOpts.shift();
@@ -349,7 +354,7 @@ handlers['ico'] = async () => {
 };
 
 handlers['token'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     failIfNotDeployed('DATOToken');
     const token = ctx.DATOToken.instance;
     const wcmd = ctx.cmdOpts.shift();
@@ -388,7 +393,7 @@ handlers['token'] = async () => {
 };
 
 handlers['wl'] = async () => {
-    checkEthNetwork();
+    await checkEthNetwork();
     failIfNotDeployed('DATOICO');
     const ico = ctx.DATOICO.instance;
     const wcmd = ctx.cmdOpts.shift();
@@ -508,8 +513,8 @@ function usage(error?: string): never {
         '\n\twl disable           - Disable address whitelisting for ICO ' +
         '\n\twl enable            - Enable address whitelisting for ICO ' +
         '\n\twl is <addr>         - Check if given <addr> in whitelist ' +
-        '\n\ttune <end> <lowcap> <hardcap> - Set end date/low-cap/hard-cap for ICO (Only in suspended state) ' +
-        '\n\t                                Eg: node ./cli.js tune \'2018-12-31\' \'6000e18\' \'22000e18\'' +
+        '\n\ttune <end> <hardcap> - Set end date/hard-cap for ICO (Only in suspended state) ' +
+        '\n\t                       Eg: node ./cli.js tune \'2018-12-31\' \'22000e18\'' +
         '\n\n\t\t <group> - Token reservation group: staff|utility' +
         '\n\t\t <addr> - Ethereum address' +
         '\n'
